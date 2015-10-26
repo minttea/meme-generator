@@ -10,7 +10,7 @@
 
   bgImage.addEventListener('load', function() {
     ctx.drawImage(bgImage, 0, 0, c.width, c.height);
-  })
+  });
 
   ctx.font = '36pt Impact';
   ctx.textAlign = 'center';
