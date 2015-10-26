@@ -4,13 +4,11 @@
     bgImage = new Image(),
     form = document.querySelector('#form'),
     topInput = document.querySelector('#top'),
-    bottomInput = document.querySelector('#bottom');
+    bottomInput = document.querySelector('#bottom'),
+    fileInput = document.querySelector('#fileInput'),
+    defaultImage = 'image.jpg';
 
-  bgImage.src = 'image.jpg';
-
-  bgImage.addEventListener('load', function() {
-    ctx.drawImage(bgImage, 0, 0, c.width, c.height);
-  });
+  bgImage.src = defaultImage;
 
   ctx.font = '36pt Impact';
   ctx.textAlign = 'center';
@@ -18,14 +16,12 @@
   ctx.strokeStyle = 'black'; // for letter outlines
   ctx.lineWidth = 3; // for letter outlines
 
-  form.addEventListener('input', function (e) {
-    var topValue = topInput.value,
-      bottomValue = bottomInput.value;
-    redrawText(topValue, bottomValue);
-  }, false);
+  function redrawCanvas(image, topValue, bottomValue) {
+    var image = image || bgImage,
+      topText = topValue || topInput.value,
+      bottomText = bottomValue || bottomInput.value;
 
-  function redrawText(topText, bottomText) {
-    ctx.drawImage(bgImage, 0, 0, c.width, c.height); //redraw image
+    ctx.drawImage(image, 0, 0, c.width, c.height); //redraw image
 
     ctx.textBaseline = 'top'; // for drawing the top text
     ctx.fillText(topText, c.width / 2, 0);
@@ -35,4 +31,32 @@
     ctx.fillText(bottomText, c.width / 2, c.height);
     ctx.strokeText (bottomText, c.width / 2, c.height);
   }
+
+  function updateImage() {
+    var file = fileInput.files[0];
+
+    var reader = new FileReader();
+    if(file) {
+      reader.readAsDataURL(file);
+    }
+    reader.onloadend = function() {
+      bgImage.src = reader.result; // this reloads the image
+    }
+  };
+
+  bgImage.addEventListener('load', function() {
+    redrawCanvas(bgImage)
+  });
+
+  bgImage.onerror = function() {
+    bgImage.src = defaultImage;
+  };
+
+  form.addEventListener('input', function (e) {
+    redrawCanvas(bgImage);
+  }, false);
+
+  fileInput.addEventListener('change', function() {
+    updateImage();
+  }, false);
 }());
