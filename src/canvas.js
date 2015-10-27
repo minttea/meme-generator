@@ -6,22 +6,62 @@
     topInput = document.querySelector('#top'),
     bottomInput = document.querySelector('#bottom'),
     fileInput = document.querySelector('#fileInput'),
-    defaultImage = 'image.jpg';
+    defaultImage = 'image.jpg',
+    defaultWidth = 500,
+    defaultHeight = 500;
 
   bgImage.src = defaultImage;
+    c.width = defaultWidth,
+    c.height = defaultHeight;
 
-  ctx.font = '36pt Impact';
-  ctx.textAlign = 'center';
-  ctx.fillStyle = 'white'; // for inside letters
-  ctx.strokeStyle = 'black'; // for letter outlines
-  ctx.lineWidth = 3; // for letter outlines
+  function setContextProperties() {
+    ctx.font = '36pt Impact';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'white'; // for inside letters
+    ctx.strokeStyle = 'black'; // for letter outlines
+    ctx.lineWidth = 3; // for letter outlines
+  }
+
+  function getScaledDim(x, y, xMax, yMax) {
+    var xMax = xMax || defaultWidth,
+      yMax = yMax || defaultHeight,
+      xNew = x,
+      yNew = y;
+
+    if(x > xMax || y > yMax) {
+      if (x === y) {
+        xNew = xMax;
+        yNew = yMax;
+      } else if(x > y) {
+        var scaleFactor = xMax / x;
+        xNew = xMax;
+        yNew = Math.floor(y * scaleFactor);
+      } else {
+        var scaleFactor = yMax / y;
+        yNew = yMax;
+        xNew = Math.floor(x * scaleFactor);
+      }
+    }
+
+    return {
+      'width': Math.round(xNew),
+      'height': Math.round(yNew)
+    }
+  }
 
   function redrawCanvas(image, topValue, bottomValue) {
     var image = image || bgImage,
       topText = topValue || topInput.value,
-      bottomText = bottomValue || bottomInput.value;
+      bottomText = bottomValue || bottomInput.value,
+      scaledImageDims = getScaledDim(image.width, image.height);
 
-    ctx.drawImage(image, 0, 0, c.width, c.height); //redraw image
+    // update canvas size and properties
+    c.width = scaledImageDims.width;
+    c.height = scaledImageDims.height;
+    setContextProperties();
+
+    // redraw scaled image on scaled canvas
+    ctx.drawImage(image, 0, 0, c.width, c.height);
 
     ctx.textBaseline = 'top'; // for drawing the top text
     ctx.fillText(topText, c.width / 2, 0);
