@@ -86,13 +86,31 @@
     };
   }
 
+  function showTempAlert(text) {
+    // show only one animation at a time & cancel any new animations
+    var prevAlert = document.getElementsByClassName('alert').length;
+
+    if(prevAlert === 0) {
+      // add an alert box
+      var alertBox = document.createElement('div');
+      alertBox.className = 'note';
+      alertBox.textContent = text;
+      document.body.appendChild(alertBox);
+      alertBox.addEventListener('animationend', function() {
+        // remove alert box
+        document.body.removeChild(alertBox);
+      });
+    }
+  }
+
   bgImage.addEventListener('load', function() {
     redrawCanvas(bgImage);
   });
 
-  bgImage.onerror = function() {
+  bgImage.addEventListener('error', function() {
     bgImage.src = defaultImage;
-  };
+    showTempAlert("Oops, that image won't work. Showing default instead.");
+  });
 
   form.addEventListener('input', function (e) {
     redrawCanvas(bgImage);
