@@ -29,7 +29,6 @@
     xMax = xMax || defaultWidth;
     yMax = yMax || defaultHeight;
 
-
     if(x > xMax || y > yMax) {
       if (x === y) {
         xNew = xMax;
